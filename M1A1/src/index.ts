@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "./db";
 import { urlShortenerTable } from "./db/schema";
 
@@ -67,7 +67,33 @@ async function main(count: number) {
 
   const end = new Date();
   console.log(`✅ Seeding completed at: ${getTimestamp()}`);
-  console.log(`🕒 Total time: ${(end.getTime() - start.getTime())} ms`);
+  console.log(`🕒 Total time: ${end.getTime() - start.getTime()} ms`);
 }
 
-main(10000000);
+async function mainSelect(count: number) {
+  const start = new Date();
+  console.log(`🚀 Started at: ${getTimestamp()}`);
+
+  for (let i = 1; i <= count; i++) {
+    await db
+      .select({ url: urlShortenerTable.original_url })
+      .from(urlShortenerTable)
+      .where(
+        inArray(urlShortenerTable.short_code, [
+          "E6ligJ",
+          "13nwTo",
+          "xDVbh9",
+          "9waxb8",
+          "4kA8iE",
+        ])
+      );
+    console.log(`[${i}] Fetched 5 URLs`);
+  }
+
+  const end = new Date();
+  console.log(`✅ Fetching completed at: ${getTimestamp()}`);
+  console.log(`🕒 Total time: ${end.getTime() - start.getTime()} ms`);
+}
+
+// main(10000000);
+mainSelect(1000000);
